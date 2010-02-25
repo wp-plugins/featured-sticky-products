@@ -2,17 +2,11 @@
 /*
 Plugin Name:WPSC Featured Products
 Plugin URI: http://getshopped.com/featured-products
-Description: A skeleton module for wpec
+Description: Featured Sticky Products is a Featured Products Upgrade to the Wp-e-Commerce Plugin
 Version: 0.1
 Author: Instinct Entertainment
 Author URI: http://getshopped.com/
 */
-
-//check to see whether the user is an admin or not.
-
-
-
-
 	
 	
 /**
