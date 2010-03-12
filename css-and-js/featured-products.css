@@ -25,20 +25,20 @@ div.wpsc_clear {
 
 .wpsc_featured .item_text {
 	float: left;
-	height: 260px;
+	height: 240px;
 	width: auto;
 }
 
 .wpsc_featured .item_image {
 	float: left;
-	height: 260px;
+	height: 240px;
 	width: 340px;
 	margin-left: 20px;
 }
 
 .wpsc_featured .item_image a {
 	display: block;
-	height: 260px;
+	height: 240px;
 	width: 340px;
 	border: 1px solid #FEFAF1;
 	border-radius: 18px;

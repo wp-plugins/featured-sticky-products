@@ -25,7 +25,7 @@ $image_height = get_option('product_image_height');
 			
 				<?php if(wpsc_the_product_thumbnail()) :?> 	   
 					<div class="item_image">
-						<a href="<?php echo wpsc_the_product_permalink(); ?>" style='background-image: url(<?php echo wpsc_the_product_image(340, 260); ?>);'>
+						<a href="<?php echo wpsc_the_product_permalink(); ?>" style='background-image: url(<?php echo wpsc_the_sticky_image(wpsc_the_product_id()); ?>);'>
 						</a>
 					</div>
 				<?php else: ?> 

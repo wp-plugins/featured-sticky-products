@@ -7,8 +7,32 @@ Version: 0.1
 Author: Instinct Entertainment
 Author URI: http://getshopped.com/
 */
+
+function wpsc_the_sticky_image($product_id){
+	$sticky_product_image = get_product_meta($product_id,'wpsc_sticky_image');
+	if($sticky_product_image != ''){
+		return WPSC_THUMBNAIL_URL.$sticky_product_image;
+	}else{
+		return 	wpsc_the_product_image(340, 260);
+	}
+}
+
+function wpsc_sticky_image_function($product_id){
+	if(file_exists($_FILES['wpsc_sticky_image']['tmp_name'])) {
+
+		$uploaded_image =  $_FILES['wpsc_sticky_image']['tmp_name'];
+		$image = $_FILES['wpsc_sticky_image']['name'];
+		if($uploaded_image !== null) {
+			$image = uniqid().$image;
+			move_uploaded_file($uploaded_image, WPSC_THUMBNAIL_DIR.$image);
+		}
+		$product_meta = array('wpsc_sticky_image'=>$image);
+		wpsc_update_product_meta($product_id, $product_meta);
+	}	
+
+}
 	
-	
+add_action('wpsc_edit_product','wpsc_sticky_image_function');	
 /**
 * wpsc_featured_products_scripts_and_styles function.
 * 
@@ -29,8 +53,35 @@ if(strpos($_SERVER['SCRIPT_NAME'], "wp-admin") === false) {
 	add_action('init', 'wpsc_featured_products_scripts_and_styles');
 }
 
+function wpsc_add_sticky_product_image_metabox($order){
+ if(array_search('wpsc_sticky_product_box', $order) === false) {
+    $order[] = 'wpsc_sticky_product_box';
+  }
+  return $order;
+
+}
+
+function wpsc_sticky_product_box($product) {
+	wpsc_sticky_product_box_form($product['id']);
+	return $output;
+}
+
+function wpsc_sticky_product_box_form($id){
+	$output .= "<div id='wpsc_sticky_product_box_form' class='postbox'>\n\r";
+	$output .="<h3 class='hndle'>".__('Sticky Product Thumbnail','wpsc').'</h3>';
+	$output .="<div class='inside'>";
+	$output .= "<p><strong>Note:</strong> For best effect please restrict Sticky Product Thumbnails to 540px x 240px dimensions.</p>";
+	$output .="<p><label for='wpsc_sticky_image'>Import Image:</label>";
+	$output .="<input type='file' name='wpsc_sticky_image' id='wpsc_sticky_image'  />";
+	$output .="</div>";
+	$output .="</div>";
+	echo $output;
+
+}
+
 
 if (is_admin()) {
+	add_filter('wpsc_products_page_forms', 'wpsc_add_sticky_product_image_metabox');
  	/**
  	 * wpsc_update_featured_products function.
  	 * 
@@ -229,7 +280,10 @@ function wpsc_featured_products_hooked() {
 }
 
 
-add_action('wpsc_top_of_products_page', 'wpsc_featured_products_hooked', 12);
+
+
+
+//add_action('wpsc_top_of_products_page', 'wpsc_featured_products_hooked', 12);
 
 
 add_shortcode('wpsc_featured_products', 'wpsc_featured_products_shorttag');
