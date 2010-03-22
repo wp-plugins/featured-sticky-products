@@ -220,11 +220,13 @@ function wpsc_display_featured_products_page($query) {
 		//echo "<pre>".print_r($wpsc_query , true)."</pre>";
 		$this_directory = plugin_dir_path(__FILE__);
 		$GLOBALS['nzshpcrt_activateshpcrt'] = true;
-		
+		$theme_file = wpsc_get_theme_file_path( 'featured-products-template.php' );
 		ob_start();
-		if(file_exists($this_directory."template/featured-products-template.php")) {
-			include($this_directory."template/featured-products-template.php");
-		}
+		if ( file_exists( $theme_file ) ) {
+			include( $theme_file );
+		} elseif( file_exists( $this_directory . "template/featured-products-template.php" ) ) {
+			include( $this_directory . "template/featured-products-template.php" );
+ 		}
 		$output = ob_get_contents();
 		ob_end_clean();
 		
