@@ -26,7 +26,7 @@ div.wpsc_clear {
 .wpsc_featured .item_text {
 	float: left;
 	height: 240px;
-	width: auto;
+	width: 40%;
 }
 
 .wpsc_featured .item_image {
@@ -68,7 +68,7 @@ div.wpsc_clear {
 	float:left;
 	width: auto;
 	color: #9B9A96;
-	font-family: Georgia,"Bitstream Charter",serif;
+/* 	font-family: Georgia,"Bitstream Charter",serif; */
 }
 
 .wpsc_featured .item_text .wpsc_description p {

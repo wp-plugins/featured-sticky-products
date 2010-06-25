@@ -53,16 +53,29 @@ if(strpos($_SERVER['SCRIPT_NAME'], "wp-admin") === false) {
 	add_action('init', 'wpsc_featured_products_scripts_and_styles');
 }
 
-function wpsc_add_sticky_product_image_metabox($order){
- if(array_search('wpsc_sticky_product_box', $order) === false) {
-    $order[] = 'wpsc_sticky_product_box';
-  }
-  return $order;
+function wpsc_add_sticky_product_image_metabox($order) {
+global $current_version_number;
+$advanced = $order["advanced"];
+$side = $order["side"];
 
+ if ( $current_version_number < 3.8 ) {
+ 
+  if(!in_array('wpsc_sticky_product_box', $order)) {
+   $order[] = 'wpsc_sticky_product_box';
+  } 
+  
+ } else {
+ 
+  if ( !in_array( 'wpsc_sticky_product_box', $side ) && !in_array( 'wpsc_sticky_product_box', $advanced ) ) {
+   $order["advanced"][] = 'wpsc_sticky_product_box';
+  } 
+  
+ } 
+  return $order;
 }
 
 function wpsc_sticky_product_box($product) {
-	wpsc_sticky_product_box_form($product['id']);
+	wpsc_sticky_product_box_form($product->ID);
 	return $output;
 }
 
@@ -142,7 +155,7 @@ jQuery('.featured_toggle_<?php echo $product_id; ?>').html("<img class='grey-sta
 		}
 		$closed_state = ((array_search(__FUNCTION__, $product_data['closed_postboxes']) !== false) ? 'closed' : '');
 		$hidden_state = ((array_search(__FUNCTION__, $product_data['hidden_postboxes']) !== false) ? 'style="display: none;"' : '');
-		?>
+	?>
 		<div id='wpsc_product_variation_forms' class='postbox <?php echo $closed_state;	?>' <?php echo $hidden_state; ?>>
 		
 			<h3 class='hndle'><?php echo __('Featured Product Settings', 'wpsc'); ?></h3>
@@ -165,9 +178,16 @@ jQuery('.featured_toggle_<?php echo $product_id; ?>').html("<img class='grey-sta
 	 * @return void
 	 */
 	function wpsc_add_featured_products($order) {
+	global $current_version_number;
+	if ( $current_version_number < 3.8 ) {
 		if(!in_array('wpsc_featured_products_forms', $order)) {
 			$order[] = 'wpsc_featured_products_forms';
 		}
+	} else { 
+			if(!in_array('wpsc_featured_products_forms', $order["side"]) && !in_array('wpsc_featured_products_forms', $order["advanced"])  ) {
+			$order["side"][] = 'wpsc_featured_products_forms';
+		}
+	}	
 		return $order;
 	}
 	
@@ -193,8 +213,6 @@ jQuery('.featured_toggle_<?php echo $product_id; ?>').html("<img class='grey-sta
 		<?php	
 	}
 	
-	
-	
 	//add_filter('wpsc_products_page_forms', 'wpsc_add_featured_products');
 	
 	add_action('wpsc_admin_product_checkbox', 'wpsc_featured_products_toggle', 10, 1);
@@ -209,24 +227,29 @@ jQuery('.featured_toggle_<?php echo $product_id; ?>').html("<img class='grey-sta
  */
 
 function wpsc_display_featured_products_page($query) {
-	global $wpdb, $wpsc_query, $wpsc_theme_path;	
+	global $wpdb, $wpsc_query, $wpsc_theme_path,$current_version_number;	
 	
 	//echo "<pre>".print_r($wpsc_query->query_vars, true)."</pre>";
 	
 	if(($wpsc_query->query_vars['product_id'] == 0) && ($wpsc_query->query_vars['product_url_name'] == null)) {  
-		$temp_wpsc_query = new WPSC_query($query);
+		if($current_version_number < 3.8){
+			$temp_wpsc_query = new WPSC_query($query);
+		}else{
+			$temp_wpsc_query = new WP_query($query);
+
+		}
 		list($wpsc_query, $temp_wpsc_query) = array($temp_wpsc_query, $wpsc_query); // swap the wpsc_query objects
-		
-		//echo "<pre>".print_r($wpsc_query , true)."</pre>";
+		//echo "<pre>";print_r($wpsc_query); echo "</pre>";
 		$this_directory = plugin_dir_path(__FILE__);
 		$GLOBALS['nzshpcrt_activateshpcrt'] = true;
 		$theme_file = wpsc_get_theme_file_path( 'featured-products-template.php' );
 		ob_start();
 		if ( file_exists( $theme_file ) ) {
 			include( $theme_file );
-		} elseif( file_exists( $this_directory . "template/featured-products-template.php" ) ) {
-			include( $this_directory . "template/featured-products-template.php" );
- 		}
+
+		}elseif(file_exists($this_directory."template/featured-products-template.php")) {
+			include($this_directory."template/featured-products-template.php");
+		}
 		$output = ob_get_contents();
 		ob_end_clean();
 		
@@ -285,10 +308,9 @@ function wpsc_featured_products_hooked() {
 
 
 
-//add_action('wpsc_top_of_products_page', 'wpsc_featured_products_hooked', 12);
+add_action('wpsc_top_of_products_page', 'wpsc_featured_products_hooked', 12);
 
 
 add_shortcode('wpsc_featured_products', 'wpsc_featured_products_shorttag');
-
 
 ?>
